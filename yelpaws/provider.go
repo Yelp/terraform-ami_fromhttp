@@ -31,7 +31,12 @@ func Provider() terraform.ResourceProvider {
 	ami.Required = false
 	ami.Optional = true
 	ami.Computed = true
-
+	instanceResource.Schema["ubuntu"] = &schema.Schema{
+		Type:     schema.TypeString,
+		Optional: true,
+		Default:  "lucid",
+		ForceNew: true,
+	}
 	instanceResource.Create = wrapCreate(instanceResource.Create)
 	instanceResource.Read = wrapCRUD(instanceResource.Read)
 	instanceResource.Update = wrapCRUD(instanceResource.Update)
@@ -83,7 +88,7 @@ func wrapCreate(create func(*schema.ResourceData, interface{}) error) func(*sche
 		yelpClient := meta.(*YelpAWSClient)
 		if _, ok := d.GetOk("ami"); !ok {
 			ami := getAMI(
-				"lucid",
+				d.Get("ubuntu").(string),
 				d.Get("instance_type").(string),
 				yelpClient.Account,
 				yelpClient.Region,
