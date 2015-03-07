@@ -2,12 +2,12 @@ package yelpaws
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
 	"github.com/hashicorp/terraform/builtin/providers/aws"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 const jenkinsUrlFmt = "https://jenkins.yelpcorp.com/job/promote-generic%s%s-ami/lastSuccessfulBuild/artifact/"
@@ -19,10 +19,9 @@ func Provider() terraform.ResourceProvider {
 	provider := aws.Provider().(*schema.Provider)
 	awsConfig := provider.Schema
 	awsConfig["account"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
-		Description:
-			"The Yelp AWS account that is being used.\n" +
+		Description: "The Yelp AWS account that is being used.\n" +
 			"Current known account are (dev, devb, stagea, stageb, prod)",
 		InputDefault: "dev",
 	}
@@ -54,10 +53,9 @@ func Provider() terraform.ResourceProvider {
 // TODO: Replace region/account with an AMIFetcher interface
 type YelpAWSClient struct {
 	Account string
-	Region string
+	Region  string
 	*aws.AWSClient
 }
-
 
 func wrapConfigure(configure func(*schema.ResourceData) (interface{}, error)) func(*schema.ResourceData) (interface{}, error) {
 	wrapped := func(d *schema.ResourceData) (interface{}, error) {
@@ -66,8 +64,8 @@ func wrapConfigure(configure func(*schema.ResourceData) (interface{}, error)) fu
 			return awsClient, error
 		}
 		client := YelpAWSClient{
-			Account: d.Get("account").(string),
-			Region: d.Get("region").(string),
+			Account:   d.Get("account").(string),
+			Region:    d.Get("region").(string),
 			AWSClient: awsClient.(*aws.AWSClient),
 		}
 		return &client, nil
