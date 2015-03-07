@@ -1,0 +1,3 @@
+dist/
+.docker_container_id
+.docker_image_id
