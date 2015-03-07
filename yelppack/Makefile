@@ -8,6 +8,8 @@ ARCH := $(shell facter architecture)
 PACKAGE_NAME := $(PROJECT)_$(VERSION)-$(ITERATION)_$(ARCH).deb
 PACKAGE_FILE := dist/$(PACKAGE_NAME)
 
+DOCKER_TAG = $(PROJECT)_$(shell date +%s)
+
 CLEAN_CONTAINER := [ -e .docker_container_id ] && docker rm --force $$(cat .docker_container_id) || true; rm -f .docker_container_id
 
 itest_%: $(PACKAGE_FILE)
@@ -26,8 +28,8 @@ $(PACKAGE_FILE): .docker_container_id
 	(retval=$$?; $(CLEAN_CONTAINER); exit $$retval; )
 
 .docker_image_id: Dockerfile
-	docker build -t $(IMAGE_TAG) .
-	docker inspect -f '{{ .Id }}' $(IMAGE_TAG) > .docker_image_id
+	docker build -t $(DOCKER_TAG) .
+	docker inspect -f '{{ .Id }}' $(DOCKER_TAG) > .docker_image_id
 
 clean:
 	$(CLEAN_CONTAINER)
